@@ -10,16 +10,18 @@ public class SpawnZombies : MonoBehaviour {
 	public int pointNumber = 100;
 	private int pointCount = 0;
 	private Transform[] zPoints;
+	private GameObject zombieParent;
 	private static int zombiesSpawned = 0;
 	private Terrain terrain;
 	private float terr_x, terr_z;
 	private Transform hero;
 	private Text txtSpeed;
-	public float pt_ceiling = 20f, pt_floor = 0f;
+	public float pt_ceiling = 125f, pt_floor = 75f;
 
 	void Start () {
 		PopulatePoints();
 		FindPoints();
+		zombieParent = GameObject.Find("Zombies");
 		for (int i = 0; i < zombieNumber; i++) {
 			SpawnZombie();
 		}
@@ -42,10 +44,12 @@ public class SpawnZombies : MonoBehaviour {
 		terr_x = terrain.terrainData.size.x;
 		terr_z = terrain.terrainData.size.z;
 		trpos_x = terrain.transform.position.x;
-		trpos_y = terrain.transform.position.y;
+		trpos_y = terrain.transform.position.y;// + terrain.terrainData.detailHeight;
 		trpos_z = terrain.transform.position.z;
 		pt_floor += trpos_y;   //update for height of terrain tranform
 		pt_ceiling += trpos_y;
+		Debug.Log("tX=" + trpos_x + " tY=" + trpos_y + " tZ=" + trpos_z);
+		Debug.Log("floor=" + pt_floor + " ceiling=" + pt_ceiling);
 		for (int i = 0; i < pointNumber; i++) {
 			do {
 				pt_x = Random.Range(trpos_x, terr_x + trpos_x);
@@ -56,6 +60,7 @@ public class SpawnZombies : MonoBehaviour {
 			point.name = "Point " + i;
 			point.transform.parent = zPointsParent.transform;
 		}
+		Debug.Log("Tree #=" + terrain.terrainData.treeInstanceCount);
 	}
 
 	bool CheckOnNavmesh(Vector3 checkPoint) {
@@ -74,6 +79,7 @@ public class SpawnZombies : MonoBehaviour {
 		point = GetPoint();
 		go = Instantiate(zombiePrefab, point.transform.position, Quaternion.identity) as GameObject;
 		go.name = "Zombie " + zombiesSpawned;
+		go.transform.SetParent(zombieParent.transform);
 		zombiesSpawned++;
 		SetPoint (go);
 	}
