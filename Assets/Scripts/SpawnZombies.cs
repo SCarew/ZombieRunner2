@@ -20,7 +20,7 @@ public class SpawnZombies : MonoBehaviour {
 
 	void Start () {
 		PopulatePoints();
-		FindPoints();
+		//FindPoints();
 		zombieParent = GameObject.Find("Zombies");
 		for (int i = 0; i < zombieNumber; i++) {
 			SpawnZombie();
@@ -50,6 +50,7 @@ public class SpawnZombies : MonoBehaviour {
 		pt_ceiling += trpos_y;
 		Debug.Log("tX=" + trpos_x + " tY=" + trpos_y + " tZ=" + trpos_z);
 		Debug.Log("floor=" + pt_floor + " ceiling=" + pt_ceiling);
+		zPoints = new Transform[pointNumber];
 		for (int i = 0; i < pointNumber; i++) {
 			do {
 				pt_x = Random.Range(trpos_x, terr_x + trpos_x);
@@ -59,9 +60,21 @@ public class SpawnZombies : MonoBehaviour {
 			point = Instantiate(pointPrefab, new Vector3(pt_x, pt_y, pt_z), Quaternion.identity) as GameObject;
 			point.name = "Point " + i;
 			point.transform.parent = zPointsParent.transform;
+			zPoints[i] = point.transform;
 		}
+		pointCount = zPointsParent.transform.childCount;
 		Debug.Log("Tree #=" + terrain.terrainData.treeInstanceCount);
 	}
+
+//	void FindPoints() {
+//		Transform g = GameObject.Find("ZPoints").transform;
+//		pointCount = g.childCount;
+//		int i = 0;
+//		foreach (Transform p in g) {
+//			zPoints[i] = p;
+//			i++;
+//		}
+//	}
 
 	bool CheckOnNavmesh(Vector3 checkPoint) {
 		if (checkPoint.y < pt_floor) 
@@ -76,7 +89,7 @@ public class SpawnZombies : MonoBehaviour {
 
 	void SpawnZombie() {
 		GameObject go, point;
-		point = GetPoint();
+		point = ReturnPoint();
 		go = Instantiate(zombiePrefab, point.transform.position, Quaternion.identity) as GameObject;
 		go.name = "Zombie " + zombiesSpawned;
 		go.transform.SetParent(zombieParent.transform);
@@ -85,26 +98,23 @@ public class SpawnZombies : MonoBehaviour {
 	}
 
 	public void SetPoint (GameObject zombie) {
-		zombie.GetComponent<AICharacterControl> ().target = GetPoint ().transform;
+		Transform dest = ReturnPoint().transform;
+		zombie.GetComponent<AICharacterControl> ().SetTarget(dest);
+		//zombie.GetComponent<NavMeshAgent>().SetDestination(dest.position);
 	}
 
 	public void SetPoint (GameObject zombie, GameObject player) {
-		zombie.GetComponent<AICharacterControl> ().target = player.transform;
+		Transform dest = player.transform;
+		zombie.GetComponent<AICharacterControl> ().SetTarget(dest);
+		//zombie.GetComponent<NavMeshAgent>().SetDestination(dest.position);
 	}
 
-	void FindPoints() {
-		Transform g = GameObject.Find("ZPoints").transform;
-		pointCount = g.childCount;
-		zPoints = new Transform[pointCount];
-		int i = 0;
-		foreach (Transform p in g) {
-			zPoints[i] = p;
-			i++;
-		}
-
+	public Transform GetPoint(GameObject zombie) {
+		Transform zTarget = zombie.GetComponent<AICharacterControl>().target;
+		return zTarget;
 	}
 
-	private GameObject GetPoint() {
+	public GameObject ReturnPoint() {
 		int i = Random.Range(0, pointCount);
 		return zPoints[i].gameObject;
 	}

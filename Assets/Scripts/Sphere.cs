@@ -20,9 +20,7 @@ public class Sphere : MonoBehaviour {
 			{ return; }
 		if (isInnerZone) {
 			zt = col.GetComponent<ZombieTarget>();
-			if (zt.IsReady()) {
-				zt.SetPlayerTarget(gameObject.transform.parent.gameObject);
-			}
+			zt.SetPlayerTarget(gameObject.transform.parent.gameObject);
 			//set zombie's target to player
 		} 
 	}
@@ -32,9 +30,7 @@ public class Sphere : MonoBehaviour {
 			{ return; }
 		if (!isInnerZone) {
 			zt = col.GetComponent<ZombieTarget>();
-			if (zt.IsReady()) {
-				zt.SetNewTarget();
-			}
+			zt.SetNewTarget();
 			//set zombie's target to random point
 		}
 	}
