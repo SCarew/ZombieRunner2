@@ -42,6 +42,7 @@ public class fstPersonController : MonoBehaviour
     private bool m_Jumping;
     private AudioSource m_AudioSource;
 	// ***
+	private bool isXBController;
 	private Animator m_Anim;
 	private Text txtSpeed, txtRotation, txtPosition, txtH, txtV, txtH2, txtV2;
 	// ***
@@ -67,9 +68,14 @@ public class fstPersonController : MonoBehaviour
 		txtSpeed = GameObject.Find("SpeedText").GetComponent<Text>();
 		txtRotation = GameObject.Find("RotText").GetComponent<Text>();
 		txtPosition = GameObject.Find("XYZText").GetComponent<Text>();
+		Debug.Log("Joystick 0: " + Input.GetJoystickNames()[0] );
+		isXBController = false;
+		if (Input.GetJoystickNames().Length > 0) {
+			if (Input.GetJoystickNames()[0].ToLower().Contains("xbox"))
+				{ isXBController = true; }
+		}
 		// ***
     }
-
 
     // Update is called once per frame
     private void Update()
@@ -141,8 +147,13 @@ public class fstPersonController : MonoBehaviour
             {
                 //m_MoveDir.y = m_JumpSpeed;
                 PlayJumpSound();
-                m_Jump = false;
-                m_Jumping = true;
+
+		        // ***
+        		m_Anim.SetTrigger("Jump");
+		        // ***
+
+				m_Jump = false;
+				m_Jumping = true;
             }
         }
         else
@@ -162,10 +173,6 @@ public class fstPersonController : MonoBehaviour
     {
         m_AudioSource.clip = m_JumpSound;
         m_AudioSource.Play();
-
-        // ***
-        m_Anim.SetTrigger("Jump");
-        // ***
     }
 
 
@@ -268,8 +275,13 @@ public class fstPersonController : MonoBehaviour
 		float horizontal2, vertical2;
 		GameObject cam = GetComponentInChildren<Camera>().gameObject;
 
-		horizontal2 = CrossPlatformInputManager.GetAxis("RHorizontal") * 60;
-		vertical2   = CrossPlatformInputManager.GetAxis("RVertical") * 45;
+		if (isXBController) {
+			horizontal2 = CrossPlatformInputManager.GetAxis("RXbHorizontal") * 60;
+			vertical2   = CrossPlatformInputManager.GetAxis("RXbVertical") * 45;
+		} else {
+			horizontal2 = CrossPlatformInputManager.GetAxis("RPsHorizontal") * 60;
+			vertical2   = CrossPlatformInputManager.GetAxis("RPsVertical") * 45;
+		}
 		//cam.transform.Rotate(Vector3.up * horizontal2 * Time.deltaTime * 5f);
 		//cam.transform.Rotate(Vector3.right * vertical2 * Time.deltaTime * 5f);
 		cam.transform.localEulerAngles = new Vector3(horizontal2, vertical2, 0f);

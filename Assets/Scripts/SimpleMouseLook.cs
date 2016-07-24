@@ -17,7 +17,7 @@ public class SimpleMouseLook : MonoBehaviour {
 	private float rotY = 0.0f; // rotation around the up/y axis
 	private float rotX = 0.0f; // rotation around the right/x axis
 	private float smoothRot = 5.0f;
-
+	private bool isXBController;
  	private Text txtRotation;
  	private Transform charTrans;
 
@@ -29,6 +29,12 @@ public class SimpleMouseLook : MonoBehaviour {
 		isLocked = lockCursor;
 		txtRotation = GameObject.Find("RotText").GetComponent<Text>();
 		charTrans = transform.parent.transform;  // get parent's transform
+
+		isXBController = false;
+		if (Input.GetJoystickNames().Length > 0) {
+			if (Input.GetJoystickNames()[0].ToLower().Contains("xbox"))
+				{ isXBController = true; }
+		}
 	}
 
 	void LockCursor(bool hide) {
@@ -50,8 +56,12 @@ public class SimpleMouseLook : MonoBehaviour {
 		rotX += mouseY * mouseSensitivity * Time.deltaTime;
 
 		if (useController) {
-			float horizontal2 = CrossPlatformInputManager.GetAxis("RHorizontal");
-			float vertical2   = -CrossPlatformInputManager.GetAxis("RVertical");
+			float horizontal2 = CrossPlatformInputManager.GetAxis("RPsHorizontal");
+			float vertical2   = -CrossPlatformInputManager.GetAxis("RPsVertical");
+			if (isXBController) {
+				horizontal2 = CrossPlatformInputManager.GetAxis("RXbHorizontal");
+				vertical2   = -CrossPlatformInputManager.GetAxis("RXbVertical");
+			}
 			rotY += horizontal2 * controllerLookSensitivity * Time.deltaTime;
 			rotX += vertical2 * controllerLookSensitivity * Time.deltaTime;
 		}
