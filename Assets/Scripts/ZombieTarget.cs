@@ -47,7 +47,7 @@ public class ZombieTarget : MonoBehaviour {
 			//sz.SetPoint(gameObject);
 			Transform dest = sz.ReturnPoint().transform;
 			gameObject.GetComponent<NavMeshAgent> ().ResetPath();
-			gameObject.GetComponent<AICharacterControl> ().SetTarget(dest);
+			gameObject.GetComponent<ThdPersonController> ().SetTarget(dest);
 
 			StartCoroutine(PauseSecond()); // ***
 			Debug.Log(gameObject.name + " setting new target to " + sz.GetPoint(gameObject).name + "->" + nav.destination.ToString() +
